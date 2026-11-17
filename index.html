@@ -62,6 +62,10 @@ body.nohook .k{display:none}
 li[hidden]{display:none}
 .empty{color:var(--muted);font-style:italic}
 @media (prefers-reduced-motion:no-preference){.card{transition:border-color .3s}}
+.chips{display:none;flex-wrap:wrap;gap:8px}
+.chips button{font:600 14px var(--f-body);color:var(--ink);background:var(--panel);border:1.5px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer}
+.chips button small{color:var(--muted);font-weight:500;margin-left:4px}
+@media (max-width:680px){.map{display:none}.chips{display:flex}.ctl input{width:100%}.ctl{width:100%}}
 </style>
 </head>
 <body>
@@ -81,6 +85,7 @@ li[hidden]{display:none}
   </header>
 
   <div class="map" aria-label="Zihin haritası genel görünüm"><svg id="svg" viewBox="0 0 1000 560" role="img"></svg></div>
+  <nav class="chips" id="chips" aria-label="Dallar"></nav>
   <div class="legend"><span><b>Kırmızı</b> = Latince/Grekçe terim</span><span>Lacivert = anlamı</span><span><i>El yazısı</i> = hafıza kancası</span><span>Dala tıkla → karta git</span></div>
   <main class="grid" id="grid"></main>
 </div>
@@ -228,6 +233,9 @@ D.forEach((d,i)=>{const a=-Math.PI/2+i*2*Math.PI/D.length,x=cx+R*1.55*Math.cos(a
 s+=`<g class="hub"><circle cx="${cx}" cy="${cy}" r="78"/><text x="${cx}" y="${cy-6}" text-anchor="middle" font-size="20" font-weight="700">Tıbbi</text><text x="${cx}" y="${cy+18}" text-anchor="middle" font-size="20" font-weight="700">Terminoloji</text></g>`;
 svg.innerHTML=s;
 const git=i=>{const c=document.getElementById("dal"+i);c.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});c.classList.add("flash");setTimeout(()=>c.classList.remove("flash"),1400);};
+const chips=document.getElementById("chips");
+chips.innerHTML=D.map((d,i)=>`<button type="button" data-i="${i}">${esc(d.kisa)}<small>${d.o.length}</small></button>`).join("");
+chips.addEventListener("click",e=>{const b=e.target.closest("button");if(b)git(+b.dataset.i)});
 svg.querySelectorAll(".node").forEach(n=>{n.addEventListener("click",()=>git(+n.dataset.i));n.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();git(+n.dataset.i)}})});
 
 // arama
