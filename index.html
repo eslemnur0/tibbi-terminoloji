@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Ara dönem tıbbi terminoloji notlarının zihin haritası: terimler, anlamları ve hafıza kancaları.">
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Ara Dönem Zihin Haritası</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Düzen: ortada merkez düğüm + 10 dallı ışınsal harita (gezinme), altında dal kartları; kırmızı = Latince terim, mavi mürekkep = Türkçe, el yazısı = kanca */
+:root{
+  --bg:#EEF2F7; --panel:#FFFFFF; --ink:#1D3C78; --muted:#5B6B85; --line:#C9D3E2;
+  --latin:#C8102E; --hook:#2E7D4F; --hl:#FFE45C; --soft:#E2E9F3;
+  --f-head:"Space Grotesk",Inter,system-ui,sans-serif; --f-body:Inter,system-ui,sans-serif; --f-hand:Kalam,"Comic Sans MS",cursive;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1828; --panel:#17233A; --ink:#DCE6F7; --muted:#9AAAC4; --line:#2C3C5A;
+  --latin:#FF6B7F; --hook:#6FD39B; --hl:#8A7A1E; --soft:#1E2D49; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1828; --panel:#17233A; --ink:#DCE6F7; --muted:#9AAAC4; --line:#2C3C5A;
+  --latin:#FF6B7F; --hook:#6FD39B; --hl:#8A7A1E; --soft:#1E2D49; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:20px}
+header{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justify-content:space-between}
+h1{font-family:var(--f-head);font-size:clamp(24px,4vw,34px);margin:0;letter-spacing:-.01em;text-wrap:balance}
+.sub{color:var(--muted);margin:2px 0 0}
+.ithaf{font-family:var(--f-hand);font-weight:700;font-size:clamp(24px,4.5vw,32px);color:var(--latin);margin:0 0 2px;transform:rotate(-2deg);transform-origin:left center}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ctl input{font:inherit;color:var(--ink);background:var(--panel);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;min-width:0;width:200px}
+.ctl button{font:600 14px var(--f-body);color:var(--ink);background:var(--panel);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer}
+.ctl button[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+:focus-visible{outline:3px solid var(--latin);outline-offset:2px}
+.map{background:var(--panel);border:1.5px solid var(--line);border-radius:18px;overflow-x:auto}
+.map svg{display:block;width:100%;min-width:620px;height:auto}
+.map text{font-family:var(--f-head);fill:var(--ink)}
+.spoke{stroke:var(--line);stroke-width:3}
+.node{cursor:pointer}
+.node rect{fill:var(--soft);stroke:var(--line);stroke-width:1.5}
+.node:hover rect,.node:focus rect{stroke:var(--latin);stroke-width:2.5}
+.hub circle{fill:var(--ink)} .hub text{fill:var(--panel)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--muted);font-size:13px}
+.legend b{color:var(--latin)} .legend i{font-family:var(--f-hand);font-style:normal;color:var(--hook);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;align-items:start}
+.card{background:var(--panel);border:1.5px solid var(--line);border-radius:16px;padding:16px 18px;min-width:0;scroll-margin-top:16px}
+.card.flash{border-color:var(--latin)}
+.card h2{font-family:var(--f-head);font-size:19px;margin:0;display:flex;gap:10px;align-items:baseline}
+.card h2 .no{font-size:13px;color:var(--muted);font-weight:500;letter-spacing:.06em}
+.meta{font-family:var(--f-hand);color:var(--hook);font-size:16px;margin:2px 0 10px}
+ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+li{border-top:1px dashed var(--line);padding-top:8px;min-width:0}
+li:first-child{border-top:0;padding-top:0}
+.t{font-weight:600;color:var(--latin);overflow-wrap:anywhere}
+.m{color:var(--ink)}
+.k{display:block;font-family:var(--f-hand);color:var(--hook);font-size:15px;line-height:1.3}
+.k::before{content:"↳ kanca: ";color:var(--muted)}
+body.quiz .m{background:var(--hl);color:transparent;border-radius:4px;cursor:pointer;user-select:none}
+body.quiz .m.acik{background:none;color:var(--ink)}
+body.nohook .k{display:none}
+li[hidden]{display:none}
+.empty{color:var(--muted);font-style:italic}
+@media (prefers-reduced-motion:no-preference){.card{transition:border-color .3s}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div>
+      <p class="ithaf">Balıma, Nuruma ♡</p>
+      <h1>Ara Dönem · Tıbbi Terminoloji</h1>
+      <p class="sub">36 slaytın tamamı, 10 dal. Her terimde anlam ve video serisindeki hafıza kancası.</p>
+    </div>
+    <div class="ctl">
+      <input id="ara" type="search" placeholder="Terim ara: itis, apex, kas…" aria-label="Terim ara">
+      <button id="quiz" aria-pressed="false" title="Anlamları sarıyla kapatır; dokununca açılır">Kendini sına</button>
+      <button id="hook" aria-pressed="true">Kancalar</button>
+    </div>
+  </header>
+
+  <div class="map" aria-label="Zihin haritası genel görünüm"><svg id="svg" viewBox="0 0 1000 560" role="img"></svg></div>
+  <div class="legend"><span><b>Kırmızı</b> = Latince/Grekçe terim</span><span>Lacivert = anlamı</span><span><i>El yazısı</i> = hafıza kancası</span><span>Dala tıkla → karta git</span></div>
+  <main class="grid" id="grid"></main>
+</div>
+
+<script>
+const D=[
+ {ad:"Temeller",kisa:"Temeller",b:"B01",meta:"LEGO: kök = ana tuğla, ünlü = yapıştırıcı",o:[
+  ["Neden önemli? (6)","Hasta güvenliği · Profesyonel iletişim · Dokümantasyon · Küresel anlayış · Yasal koruma · Kariyer gelişimi","Hasta Profesöre Doğru Konuşursa Yargıç Kızmaz"],
+  ["Hasta güvenliği","hastaya zarar verecek yanlış iletişimi önler","H = Hasta"],
+  ["Profesyonel iletişim","kesin bilgi alışverişi sağlar","P = Profesöre"],
+  ["Dokümantasyon","doğru tıbbi kayıtları garanti eder","D = Doğru"],
+  ["Küresel anlayış","evrensel bir sağlık hizmeti dili oluşturur","K = Konuşursa"],
+  ["Yasal koruma","net ve savunulabilir tıbbi kayıtlar","Y = Yargıç"],
+  ["Kariyer gelişimi","tüm sağlık hizmeti rolleri için gerekli","K = Kızmaz"],
+  ["Kök","anlamı/yapısı bozulmadan bölünmeyen · türememiş · kendisinden yeni sözcük türetilebilen · ek almamış","kök = tohum: kırarsan biter, ondan ağaç çıkar"],
+  ["Kaynaştırma ünlüsü","kök + son ek ya da kök + kök bağlar; genellikle “o” (e, a, i de olabilir)","“o” = zincir halkası"],
+  ["splen + o + megaly","splenomegaly = dalak büyümesi","mega = dev → dev dalak"],
+  ["electr + o + cardi + o + gram","electrocardiogram (EKG)","kalbin elektriğinin yazısı"]]},
+ {ad:"Pozisyon ve yönler",kisa:"Pozisyon",b:"B02",meta:"vücudun sıfır noktası + pusula",o:[
+  ["Anatomik pozisyon","ayakta dik · yüz karşıya · avuç içleri karşıya · ayaklar öne; tüm tanımlar buna göre","vesikalık çeken asker"],
+  ["Situs","bu duruşun adı (notta “cytus”)","situs → site: herkesin yeri belli"],
+  ["Planum medianum","medyan düzlem: tam ortadan geçer, dexter (sağ) + sinister (sol) iki eşit parça","medyan = ortanca"],
+  ["Anterior / Posterior","ön / arka","antre evin önü · poster arka duvara"],
+  ["Superior / Inferior","üst / alt","Süpermen yukarı · inferno aşağı"],
+  ["Dexter (dextra) / Sinister (sinistra)","sağ / sol","becerikli sağ · sinsi sol"],
+  ["Ventralis / Dorsalis","ön, önde, ön ile ilişkili / arka, arkada, arka ile ilişkili","venter = karın · dorsal yüzgeç sırtta"],
+  ["Medianus","tam ortada bulunan","medyan = tam orta"],
+  ["Cranialis (cranial) / Caudalis (caudal)","başa yakın, baş ile ilgili / alt, kuyruğa yakın, kuyrukla ilgili","cranium kafatası · cauda kuyruk"],
+  ["Apicalis (apical) / Basalis (basal)","tepeyle (organın tepesiyle) ilgili / tabanla ilgili","apex sivri tepe · bastığın taban"]]},
+ {ad:"Yön terimleri 2",kisa:"Yönler 2",b:"B03",meta:"soğan gibi: yüzeyden derine, merkezden çevreye",o:[
+  ["Superficialis / Profundus","yüzeyel, yüzeysel / derin, derinde olan","surface · profound (flexor digitorum superficialis / profundus)"],
+  ["Proximalis / Distalis","gövdeye ya da bağlanma noktasına yakın / uzak","proximity yakınlık · distance uzaklık"],
+  ["Centralis / Peripheralis","merkeze yakın, merkezi / dışa yakın","center · periferi = çevre yolu"],
+  ["Visceralis","iç organlarla ilgili, içe yakın","vis-iç: organı içten saran yaprak"],
+  ["Parietalis","vücut boşluklarının dış tarafına yakın","paries = duvar"],
+  ["Intermedius","ortada (iki yapının arasında)","internet = ağlar arası"]]},
+ {ad:"Kökler ve cerrahi son ekler",kisa:"Kökler",b:"B04",meta:"cerrahın alet çantası: çek · bak · kes · aç · çıkar",o:[
+  ["Os · oss · osseo · ossi · ost · oste","kemik","osteoporoz = kemik erimesi"],
+  ["Arthr · arthro","eklem","ninenin artrozlu dizi"],
+  ["Chondr · chondro","kıkırdak","kondro = kıtır kıtır kıkırdak"],
+  ["My · myo","kas","mayo: kaslarını gösterirsin (myelo = ilik, karıştırma)"],
+  ["Tendon","tendon","Aşil tendonu"],
+  ["-centesis","sıvı çekme","şırınga: sen çek (amniyosentez)"],
+  ["-scopy","fiberoptik kamera ile gözle bakma","teleskop, periskop"],
+  ["-tomy","kesme, kesik oluşturma (osteotomy, thoracotomy)","ana-TOMİ = kesmek"],
+  ["-stomy","delik açma, ağızlaştırma","stoma = ağız; fazladan S = sürekli açık"],
+  ["-ectomy","kesip çıkarma","ec = dışarı (apendektomi)"]]},
+ {ad:"Ön ekler ve son ekler",kisa:"Ekler",b:"B05",meta:"ekler trafik işareti gibi yön verir",o:[
+  ["Concha + e = conchae","sondaki -e çoğullaştırır","-a → -ae: vertebra → vertebrae"],
+  ["Cavitas","boşluk","kavite · cave = mağara"],
+  ["Septum","bölme (interventricular septum, nasal septum)","septum piercing"],
+  ["Hypo-","alt, aşağı, az (hypopharynx)","hipoglisemi = şeker az"],
+  ["Hyper-","üst, fazla","hiperaktif"],
+  ["Supra-","üst","süper = üstün"],
+  ["Sub-","alt","subway = yerin altı"],
+  ["Epi-","üst, üstünde","epidermis"],
+  ["-olus","küçültür: bronchus → bronchiolus, arter → arteriolus","-olus = Türkçe -cik"],
+  ["-al, -ic","ilişkili, ilgili: mediastinal pleura, costal pleura, thoracic cavity","Türkçe -sal/-sel"]]},
+ {ad:"Omurga",kisa:"Omurga",b:"B06",meta:"5 katlı apartman",o:[
+  ["Cervical","7 vertebra","kahvaltı 7'de"],
+  ["Thoracic","12 vertebra","öğle 12'de"],
+  ["Lumbar","5 vertebra","akşam 5'te"],
+  ["Sacral","5 bitişik vertebra","sonra yatak: bitişik"],
+  ["Coccygeal","4 bitişik vertebra","toplam 33"],
+  ["Transverse","yatay","transfer: yana geç"],
+  ["Spinous","iğnemsi","spina = diken"],
+  ["Process","çıkıntı","pro = öne çıkan"],
+  ["Superior articular process","üst eklem çıkıntısı","üst + eklemle ilgili + çıkıntı"],
+  ["Articulatio / articular","eklem / eklemle ilgili","isim / sıfat"],
+  ["Arcus","kemer","ark (zafer takı)"],
+  ["Facet / articular facet","yüz / eklem yüzü","face = yüz"],
+  ["Notch (noç)","çentik · inferior vertebral notch = alt vertebral çentik","not için çubuğa çentik"]]},
+ {ad:"Kas-iskelet hastalık ve semptom",kisa:"Kas-iskelet",b:"B07–08",meta:"itfaiye + kaza raporu",o:[
+  ["-itis","iltihap","itfaiye: yangın var"],
+  ["Osteitis","kemik iltihabı","osteo + itis"],
+  ["Osteomyelitis","kemik iliği iltihabı","myelos = ilik"],
+  ["Periarthritis","eklem çevresindeki dokuların iltihabı","peri = çevre (perimetre)"],
+  ["Osteoarthritis","kemik ve eklem dokusunun iltihabı","osteo + arthron + itis"],
+  ["Osteoma","kemik tümörü","-oma = tümör, kitle"],
+  ["Osteomalacia","kemik dokusunun yumuşaması","-malacia = zayıflık, yumuşama (malakse)"],
+  ["-algia","ağrı: myalgia kas · arthralgia eklem · metatarsalgia ayak metatars","nostalji = sıla ağrısı"],
+  ["Kas atrofisi (atrophy)","kas kitlesinin küçülmesi","alçıdan çıkan ince bacak"],
+  ["Fracture","kırık","frak! kırılma sesi"],
+  ["Dislocation","çıkık","dys = bozuk + location = yer"],
+  ["Subluxation","tam olmayan çıkık; eklem yüzleri kısmen uzaklaşır","sub = altında, eksik"],
+  ["Hematoma","bir bölgede kan birikmesi","hem(at) = kan + -oma = kitle → morluk"],
+  ["Hemarthrosis","eklem boşluğunda kan birikmesi","hem + arthron + -osis (durum)"],
+  ["Ankylosis","eklem yüzlerinin birbirine kaynaşması","eklemine kilit vurulmuş"]]},
+ {ad:"Kalp ve damarlar",kisa:"Kalp",b:"B09",meta:"kalbin evi: duvar, oda, kapı",o:[
+  ["Cor (L) · Cardia (G)","kalp","kardiyoloji"],
+  ["Vas (L) · Angi (G)","damar","vazo · anjiyo"],
+  ["Arteria / arteriola","atar damar / küçük arter","arter = atar"],
+  ["Vena (L) · Phlebos (G) / venula","toplar damar / küçük çaplı ven","flebit"],
+  ["Lenf damarları","akkan","ak kan = beyaz kan"],
+  ["-ula · -ulus · -ola · -olus","küçültme ekleri","hepsinde L = little"],
+  ["Kalbin yeri","intrathoracic · interpulmonalis · supradiaphragmatic","intra içinde · inter arası · supra üst"],
+  ["Basis / Apex","taban üstte / tepe altta","ters dondurma külahı"],
+  ["Pericardium · Myocardium · Endocardium","çevreleyen zar · kalp kası orta katman · en iç katman","dıştan içe: Pek Mutlu Ev"],
+  ["Atrium · septum interatriale","kulakçık (2 boşluk) · atriyumlar arası bölme","otelin giriş holü"],
+  ["Valva tricuspidalis · valva trunci pulmonalis","trikuspidal kapak · pulmonal kapak","valva = valf, tri = üç"],
+  ["Cuspis","atriyoventriküler deliklerdeki kapakçıkların her biri","kapağın tek yaprağı"]]},
+ {ad:"Solunum",kisa:"Solunum",b:"B10–11",meta:"nefes ritmi + ameliyathane",o:[
+  ["Eupnea (öpne)","normal solunum","eu = iyi (öfori)"],
+  ["Dyspnea (dispne)","nefes darlığı, solunum güçlüğü","dys = bozuk"],
+  ["Apnea (apne)","geçici solunum durması","a = yok (uyku apnesi)"],
+  ["Bradypnea","yavaş solunum","brady: birader yavaş ol"],
+  ["Tachypnea","hızlı solunum","taki → taksi"],
+  ["Atelectasis","akciğerlerin bir bölümünün sönmesi","ateles yetersiz + ektasis genişleme = tam şişmeyen balon"],
+  ["Bronchiectasis","bronşların genişlemesi","esnemiş hortum"],
+  ["Hemothorax","göğüs boşluğuna kan dolması","hemo = kan"],
+  ["Pneumothorax","göğüs boşluğuna hava dolması","pnömatik = havalı"],
+  ["Thoracentesis","plevra boşluğundan sıvı boşaltılması","centesis = sıvı çek"],
+  ["Bronchoscopy","trakeobronşiyal yollara fiberoptik aletle gözle bakma","bronşa teleskop"],
+  ["Tracheostomy","trakeanın deri ile ağızlaştırılarak hava yolu açılması (notta trachea = gırtlak)","boyunda ikinci ağız"],
+  ["Thoracostomy","genellikle tüp için toraksta açıklık","göğse hortum"],
+  ["Pneumonectomy","akciğerin bir kısmının ya da birinin kesip çıkarılması","pneumON = akciğer"],
+  ["Lobectomy","akciğerin bir lobunun çıkarılması","portakalın tek dilimi"]]},
+ {ad:"Sindirim",kisa:"Sindirim",b:"B12–13",meta:"ağız turu + yangın haritası",o:[
+  ["Cavitas oris","ağız boşluğu","oral ilaç"],
+  ["Labium · Bucca","dudak · yanak","labial ses · bucak"],
+  ["Palatum · Gingiva","damak · diş eti","saray tavanı · gingivit"],
+  ["Dens · Dentes","diş · dişler","dentist"],
+  ["Glossa · Uvula · Tonsil","dil · küçük dil · bademcik","glossary · -ula küçültme · tonsillit"],
+  ["Aperitive · Obesity · Anorexia","iştah açıcı · şişmanlık · iştah kaybı","aperatif meze · obez · an = yok"],
+  ["-phagia · aphagia · dysphagia","yutma · yutamama · yutma güçlüğü","apnea/dyspnea ile aynı mantık"],
+  ["Oesophagitis · Parotitis","yemek borusu · kulak altı tükürük bezi iltihabı","phag = yutma · par + ot = kulak yanı"],
+  ["Gastritis · Enteritis · Colitis","mide · ince bağırsak · kolon iltihabı","gastronomi · enteron"],
+  ["Ulcerative colitis","kalın bağırsakta ülserle ortaya çıkan inflamatuar hastalık","yara + yangın"],
+  ["Pancreatitis · Hepatitis","pankreas · karaciğer iltihabı","hepar = karaciğer"],
+  ["Cholecystitis · Cholangitis","safra kesesi · safra kanalları iltihabı","cyst = kese · angi = kanal"]]}
+];
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const grid=document.getElementById("grid");
+grid.innerHTML=D.map((d,i)=>`<section class="card" id="dal${i}"><h2><span class="no">${d.b}</span>${esc(d.ad)}</h2><p class="meta">${esc(d.meta)}</p><ul>${d.o.map(([t,m,k])=>`<li data-q="${esc((t+" "+m+" "+k).toLocaleLowerCase("tr"))}"><span class="t">${esc(t)}</span> = <span class="m">${esc(m)}</span><span class="k">${esc(k)}</span></li>`).join("")}</ul><p class="empty" hidden>Bu dalda eşleşme yok.</p></section>`).join("");
+
+// ışınsal genel görünüm
+const svg=document.getElementById("svg"),cx=500,cy=280,R=205,NS="http://www.w3.org/2000/svg";
+let s="";
+D.forEach((d,i)=>{const a=-Math.PI/2+i*2*Math.PI/D.length,x=cx+R*1.55*Math.cos(a),y=cy+R*Math.sin(a);
+  s+=`<line class="spoke" x1="${cx}" y1="${cy}" x2="${x.toFixed(0)}" y2="${y.toFixed(0)}"/>`;});
+D.forEach((d,i)=>{const a=-Math.PI/2+i*2*Math.PI/D.length,x=cx+R*1.55*Math.cos(a),y=cy+R*Math.sin(a),w=Math.max(120,d.kisa.length*11+50);
+  s+=`<g class="node" tabindex="0" role="link" data-i="${i}" aria-label="${esc(d.ad)}"><rect x="${(x-w/2).toFixed(0)}" y="${(y-26).toFixed(0)}" width="${w}" height="52" rx="26"/>
+  <text x="${x.toFixed(0)}" y="${(y-2).toFixed(0)}" text-anchor="middle" font-size="18" font-weight="700">${esc(d.kisa)}</text>
+  <text x="${x.toFixed(0)}" y="${(y+16).toFixed(0)}" text-anchor="middle" font-size="12" style="fill:var(--muted)">${d.b} · ${d.o.length} madde</text></g>`;});
+s+=`<g class="hub"><circle cx="${cx}" cy="${cy}" r="78"/><text x="${cx}" y="${cy-6}" text-anchor="middle" font-size="20" font-weight="700">Tıbbi</text><text x="${cx}" y="${cy+18}" text-anchor="middle" font-size="20" font-weight="700">Terminoloji</text></g>`;
+svg.innerHTML=s;
+const git=i=>{const c=document.getElementById("dal"+i);c.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});c.classList.add("flash");setTimeout(()=>c.classList.remove("flash"),1400);};
+svg.querySelectorAll(".node").forEach(n=>{n.addEventListener("click",()=>git(+n.dataset.i));n.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();git(+n.dataset.i)}})});
+
+// arama
+document.getElementById("ara").addEventListener("input",e=>{const q=e.target.value.trim().toLocaleLowerCase("tr");
+  document.querySelectorAll(".card").forEach(c=>{let n=0;c.querySelectorAll("li").forEach(li=>{const ok=!q||li.dataset.q.includes(q);li.hidden=!ok;n+=ok});c.querySelector(".empty").hidden=n>0;});});
+// kendini sına + kanca aç/kapa
+const tq=document.getElementById("quiz"),th=document.getElementById("hook");
+tq.onclick=()=>{const on=document.body.classList.toggle("quiz");tq.setAttribute("aria-pressed",on);document.querySelectorAll(".m.acik").forEach(m=>m.classList.remove("acik"))};
+th.onclick=()=>{const off=document.body.classList.toggle("nohook");th.setAttribute("aria-pressed",!off)};
+grid.addEventListener("click",e=>{const m=e.target.closest(".m");if(m&&document.body.classList.contains("quiz"))m.classList.toggle("acik")});
+</script>
+</body>
+</html>
